@@ -48,7 +48,7 @@ export const GradientButton = ({ className, text, onClick, children }) => {
     )
 }
 
-const CurrencyDetail = ({ className, children, text }) => {
+const CurrencyDetail = ({ amount, setAmount, className, children, text }) => {
     return (
         <>
             <FlexCol className={`bg-[#293A3C] rounded-[20px] p-[2rem] sm:flex-row items-center justify-between ${className}`}>
@@ -57,11 +57,19 @@ const CurrencyDetail = ({ className, children, text }) => {
                         You {text}
                     </h6>
                     <h6 className='text-[1.38rem] font-inter text-white mt-2 font-semibold flex items-center '>
-                        500
+                        <input
+                            type="text"
+                            name="price"
+                            // value={"500"}
+                            amount={amount}
+                            setAmount={setAmount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            className='font-semibold text-[1.38rem] font-inter text-white bg-transparent border-none outline-none w-16 text-end mr-1'
+                        />
                         {text == "Send" ?
                             "$"
                             :
-                            <div className="flex w-8 h-8">
+                            <div className="flex w-8 h-8 -ml-1">
                                 <img src={CoinSvg} />
                             </div>
                         }
@@ -109,14 +117,18 @@ const CurrencyDetail = ({ className, children, text }) => {
 
 
 
-export const PaymentCard = () => {
+export const PaymentCard = ({ amount, setAmount }) => {
     return (
         <Card className="w-11/12 max-w-xl absolute flex -top-6 left-1/2 transform -translate-x-1/2 ">
             <CardBody>
                 <h1 className='font-inter text-[2.75rem] font-black text-center text-black mb-2' >
                     Buy Coins
                 </h1>
-                <CurrencyDetail className={''} text={"Send"} />
+                <CurrencyDetail
+                    text={"Send"}
+                    amount={amount}
+                    setAmount={setAmount}
+                />
                 <div className="w-full m-7">
                     <img src={StyleImage} />
                 </div>
@@ -125,7 +137,6 @@ export const PaymentCard = () => {
                     className={'mt-10 py-10 text-center w-full text-[2rem]'}
                     text={"Payment Confirm"}
                 />
-
             </CardBody>
         </Card>
     );
@@ -135,6 +146,10 @@ export const PaymentCard = () => {
 export const ConnectWalletBtn = ({ className }) => {
     return (
         <>
+            {/* <GradientButton
+                className={'mt-10 py-10 text-center w-full text-[2rem]'}
+                text={"Connect"}
+            /> */}
             <ConnectButton.Custom>
                 {({
                     account,

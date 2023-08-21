@@ -30,8 +30,8 @@ const App = () => {
   );
 
   const { connectors } = getDefaultWallets({
-    appName: 'My RainbowKit App',
-    projectId: 'YOUR_PROJECT_ID',
+    appName: 'Payment',
+    projectId: '72f5d80525bd261bb92a76b1426b1ce0',
     chains
   });
 
@@ -45,24 +45,24 @@ const App = () => {
     <>
       <WagmiConfig config={wagmiConfig}>
         <RainbowKitProvider chains={chains}>
-      <FlexCol>
-        {/* Header */}
-        <Header />
+          <FlexCol>
+            {/* Header */}
+            <Header />
 
-        {/* Banner */}
-        <Banner />
+            {/* Banner */}
+            <Banner />
 
-        {/* Social Bar */}
-        <SocialBar />
+            {/* Social Bar */}
+            <SocialBar />
 
-        {/* CountDown Card */}
-        <CountDownCard />
+            {/* CountDown Card */}
+            <CountDownCard />
 
-        {/* Footer */}
-        <Footer />
-      </FlexCol>
+            {/* Footer */}
+            <Footer />
+          </FlexCol>
 
-      </RainbowKitProvider>
+        </RainbowKitProvider>
       </WagmiConfig>
 
     </>
