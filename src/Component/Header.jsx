@@ -3,7 +3,6 @@ import { ConnectWalletBtn, FlexCol, FlexRow } from './Elements'
 // import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const Header = () => {
-
     return (
         <>
             <FlexCol className={"w-[95%] h-auto max-w-[1980px] mx-auto justify-between my-6 md:flex-row "}>

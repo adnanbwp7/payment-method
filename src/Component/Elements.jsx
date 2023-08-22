@@ -13,6 +13,8 @@ import {
 import CoinSvg from '../Assets/Images/Coin.png'
 import StyleImage from '../Assets/Images/StyleImage.svg'
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { Ethereum, Binance } from '../Assets/data/currency';
+import { useAccount, useNetwork } from 'wagmi';
 
 
 export const FlexRow = ({ className, children }) => {
@@ -34,11 +36,12 @@ export const FlexCol = ({ className, children }) => {
     )
 }
 
-export const GradientButton = ({ className, text, onClick, children }) => {
+export const GradientButton = ({ className, disabled, text, onClick, children }) => {
     return (
         <>
             <button
-                className={`border-none bg-gradient-to-tr from-[#933FFE] to-[#18C8FF] rounded-xl text-white ${className}`}
+                disabled={disabled}
+                className={`border-none ${disabled ? "opacity-50" : 'opacity-100'} bg-gradient-to-tr from-[#933FFE] to-[#18C8FF] rounded-xl text-white ${className}`}
                 onClick={onClick}
             >
                 {text && text}
@@ -48,99 +51,6 @@ export const GradientButton = ({ className, text, onClick, children }) => {
     )
 }
 
-const CurrencyDetail = ({ amount, setAmount, className, children, text }) => {
-    return (
-        <>
-            <FlexCol className={`bg-[#293A3C] rounded-[20px] p-[2rem] sm:flex-row items-center justify-between ${className}`}>
-                <FlexCol>
-                    <h6 className='text-[1rem] font-inter text-white font-normal'>
-                        You {text}
-                    </h6>
-                    <h6 className='text-[1.38rem] font-inter text-white mt-2 font-semibold flex items-center '>
-                        <input
-                            type="text"
-                            name="price"
-                            // value={"500"}
-                            amount={amount}
-                            setAmount={setAmount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            className='font-semibold text-[1.38rem] font-inter text-white bg-transparent border-none outline-none w-16 text-end mr-1'
-                        />
-                        {text == "Send" ?
-                            "$"
-                            :
-                            <div className="flex w-8 h-8 -ml-1">
-                                <img src={CoinSvg} />
-                            </div>
-                        }
-                    </h6>
-                </FlexCol>
-
-                {text == "Send" ?
-                    <Menu>
-                        <MenuHandler>
-                            <button className="font-inter border-2 border-white/30 rounded-xl text-white text-[1.38rem] gap-2 py-5 px-4 font-semibold flex items-center">
-                                $ USD
-                                <svg width={14} height={14} viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <mask id="mask0_12_20" style={{ maskType: 'luminance' }} maskUnits="userSpaceOnUse" x={1} y={3} width={12} height={9}>
-                                        <path d="M10.5 5.54167L7 9.04167L3.5 5.54167H10.5Z" fill="white" stroke="white" strokeWidth={4} strokeLinejoin="round" />
-                                    </mask>
-                                    <g mask="url(#mask0_12_20)">
-                                        <path d="M0 0H14V14H0V0Z" fill="white" />
-                                    </g>
-                                </svg>
-                            </button>
-                        </MenuHandler>
-                        <MenuList>
-                            <MenuItem>Menu Item 1</MenuItem>
-                            <MenuItem>Menu Item 2</MenuItem>
-                            <MenuItem>Menu Item 3</MenuItem>
-                        </MenuList>
-                    </Menu>
-                    :
-                    <button className="font-inter border-2 border-white/30 rounded-xl text-white text-[1.38rem] gap-2 py-5 px-4 font-semibold flex items-center">
-                        <div className="flex">
-                            <div className="flex w-8 h-8">
-                                <img src={CoinSvg} />
-                            </div>
-                            COIN
-                        </div>
-                    </button>
-                }
-
-
-                {children}
-            </FlexCol>
-        </>
-    )
-}
-
-
-
-export const PaymentCard = ({ amount, setAmount }) => {
-    return (
-        <Card className="w-11/12 max-w-xl absolute flex -top-6 left-1/2 transform -translate-x-1/2 ">
-            <CardBody>
-                <h1 className='font-inter text-[2.75rem] font-black text-center text-black mb-2' >
-                    Buy Coins
-                </h1>
-                <CurrencyDetail
-                    text={"Send"}
-                    amount={amount}
-                    setAmount={setAmount}
-                />
-                <div className="w-full m-7">
-                    <img src={StyleImage} />
-                </div>
-                <CurrencyDetail className={''} text={"Recieved"} />
-                <GradientButton
-                    className={'mt-10 py-10 text-center w-full text-[2rem]'}
-                    text={"Payment Confirm"}
-                />
-            </CardBody>
-        </Card>
-    );
-}
 
 
 export const ConnectWalletBtn = ({ className }) => {

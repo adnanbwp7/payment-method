@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
-import { ConnectWalletBtn, FlexCol, GradientButton, PaymentCard } from './Elements'
+import { ConnectWalletBtn, FlexCol, GradientButton } from './Elements'
 import { useDebounce } from 'use-debounce'
 
 import {
     useAccount,
+    useConnect,
     useContractRead,
+    useNetwork,
     usePrepareSendTransaction,
     useSendTransaction,
     useWaitForTransaction,
@@ -13,12 +15,12 @@ import {
 import { ethers } from 'ethers';
 // import { parseEther } from 'viem'
 import PAYMENT from '../../ABI/payment.json'
+import { PaymentCard } from './PaymentCard';
 
 const Banner = () => {
 
     // const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-    const [amount, setAmount] = useState('')
 
     // // get end user's account
 
@@ -26,27 +28,22 @@ const Banner = () => {
 
     // const contract = new ethers.Contract(PAYMENT_CONTRACT_ADDRESS, signer);
 
-    // const { data, isError,error, isLoading } = useContractRead({
-    //     address: PAYMENT_CONTRACT_ADDRESS,
+
+
+    // const { data, isError, error, isLoading } = useContractRead({
+    //     address: "0xB329bDad74861Ef1692d5a56E96c9C1Bb30F2776",
     //     abi: PAYMENT,
-    //     functionName: 'preSaleStartTime',
+    //     functionName: 'EthToToken',
+    //     args: [(amount * 1e18).toString()]
     // })
 
-
-    const { data, isError, error, isLoading } = useContractRead({
-        address: "0xB329bDad74861Ef1692d5a56E96c9C1Bb30F2776",
-        abi: PAYMENT,
-        functionName: 'EthToToken',
-        args: [(amount * 1e18).toString()]
-    })
-
-    console.log("🚀 ~ file: Banner.jsx:32 ~ Banner ~ data:", data)
-    console.log("🚀 ~ file: Banner.jsx:32 ~ Banner ~ isError:", isError, error)
-    console.log("🚀 ~ file: Banner.jsx:32 ~ Banner ~ isLoading:", isLoading)
+    // console.log("🚀 ~ file: Banner.jsx:32 ~ Banner ~ data:", data,)
+    // console.log("🚀 ~ file: Banner.jsx:32 ~ Banner ~ isError:", isError, error)
+    // console.log("🚀 ~ file: Banner.jsx:32 ~ Banner ~ isLoading:", isLoading)
 
 
-    const { isConnected } = useAccount()
-
+    const { activeConnector, isConnected, connector } = useAccount()
+    const { chain, chains } = useNetwork()
 
     // const [to, setTo] = React.useState('')
     // const [amount, setAmount] = React.useState('')
@@ -140,10 +137,7 @@ const Banner = () => {
                     </div>
                 </FlexCol>
 
-                <PaymentCard
-                    amount={amount}
-                    setAmount={setAmount}
-                />
+                <PaymentCard />
             </FlexCol>
         </FlexCol>
     )

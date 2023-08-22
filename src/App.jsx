@@ -1,5 +1,5 @@
 import React from 'react'
-import { FlexCol, FlexRow, GradientButton, PaymentCard } from './Component/Elements'
+import { FlexCol } from './Component/Elements'
 import Header from './Component/Header'
 import Banner from './Component/Banner'
 import SocialBar from './Component/SocialBar'
@@ -14,15 +14,16 @@ import {
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import {
   mainnet,
-  polygon,
-  bscTestnet, bsc
+  baseGoerli,
+  bsc,
+  bscTestnet,
 } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 
 const App = () => {
   const { chains, publicClient } = configureChains(
-    [mainnet, polygon, bscTestnet, bsc],
+    [bsc, mainnet, baseGoerli, bscTestnet],
     [
       alchemyProvider({ apiKey: "JomhmuQ76IsTZ8H5xQ0kuj2kvpHwF8X2" }),
       publicProvider()

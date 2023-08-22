@@ -64,3 +64,25 @@ font-inter {
   background-image: radial-gradient(50% 50.00% at 50% 50.00%, #FCD5F6 0%, rgba(96, 70, 208, 0.81) 100%);
   filter: blur(62px);
 }
+
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+/* for mozilla */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
