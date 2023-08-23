@@ -5,8 +5,9 @@ import Banner from './Component/Banner'
 import SocialBar from './Component/SocialBar'
 import Footer from './Component/Footer'
 import CountDownCard from './Component/CountDownCard'
-
+import "react-toastify/dist/ReactToastify.css";
 import '@rainbow-me/rainbowkit/styles.css';
+
 import {
   getDefaultWallets,
   RainbowKitProvider,
@@ -20,6 +21,7 @@ import {
 } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
+import { ToastContainer } from 'react-toastify'
 
 const App = () => {
   const { chains, publicClient } = configureChains(
@@ -28,7 +30,8 @@ const App = () => {
       alchemyProvider({ apiKey: "JomhmuQ76IsTZ8H5xQ0kuj2kvpHwF8X2" }),
       publicProvider()
     ]
-  );
+    );
+    console.log("🚀 ~ file: App.jsx:28 ~ App ~ chains:", chains)
 
   const { connectors } = getDefaultWallets({
     appName: 'Payment',
@@ -46,6 +49,17 @@ const App = () => {
     <>
       <WagmiConfig config={wagmiConfig}>
         <RainbowKitProvider chains={chains}>
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
           <FlexCol>
             {/* Header */}
             <Header />

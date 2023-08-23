@@ -79,10 +79,27 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
+select {
+  border-radius: 4px;
+  display: inline-block;
+  line-height: 1.5em;
+  background-image: url('./Assets/Images/arrow.png');
+  background-position:
+    calc(100% - 20px) calc(1em + 2px),
+    calc(100% - 15px) calc(1em + 2px),
+    calc(100% - .5em) .5em;
+  background-size: 1.5rem;
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
 }
