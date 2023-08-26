@@ -1,11 +1,18 @@
-import React, { useState } from 'react'
-import { ConnectWalletBtn, FlexCol, GradientButton } from './Elements'
+import React, { useEffect, useState } from 'react'
+import { ConnectWalletBtn, FlexCol, FlexRow, GradientButton } from './Elements'
 import { useDebounce } from 'use-debounce'
-
+import {
+    Tabs,
+    TabsHeader,
+    TabsBody,
+    Tab,
+    TabPanel,
+} from "@material-tailwind/react";
 import {
     useAccount,
     useConnect,
     useContractRead,
+    useContractReads,
     useNetwork,
     usePrepareSendTransaction,
     useSendTransaction,
@@ -16,9 +23,39 @@ import { ethers } from 'ethers';
 // import { parseEther } from 'viem'
 import PAYMENT from '../../ABI/payment.json'
 import { PaymentCard } from './PaymentCard';
+import SwapingCard from './SwapingCard';
+import { paymentAddress } from '../Assets/data/valure';
+import PaymentABI from '../../ABI/payment.json'
+
+
 
 const Banner = () => {
+    const [userBounce, setUserBounce] = useState({
+        0: "",
+        1: "",
+        2: "",
+        3: "",
+        4: "",
+    })
 
+    const tabsData = [
+        {
+            label: "Buy",
+            value: "swap",
+            desc: <PaymentCard
+                userBounce={userBounce}
+                setUserBounce={setUserBounce}
+            />
+        },
+        {
+            label: "Claim Tokens",
+            value: "claim",
+            desc: <SwapingCard
+                userBounce={userBounce}
+                setUserBounce={setUserBounce}
+            />
+        },
+    ]
     // const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 
@@ -31,7 +68,7 @@ const Banner = () => {
 
 
     // const { data, isError, error, isLoading } = useContractRead({
-    //     address: "0xB329bDad74861Ef1692d5a56E96c9C1Bb30F2776",
+    //     address: "0x4e37ADeEDc0480b3f3687Dc50FAa58504d17C643",
     //     abi: PAYMENT,
     //     functionName: 'EthToToken',
     //     args: [(amount * 1e18).toString()]
@@ -45,6 +82,9 @@ const Banner = () => {
     const { activeConnector, isConnected, connector } = useAccount()
     const { chain, chains } = useNetwork()
 
+
+    const [tokenSold, setTokenSold] = useState(0)
+    const [supply, setSupply] = useState(0)
     // const [to, setTo] = React.useState('')
     // const [amount, setAmount] = React.useState('')
 
@@ -55,6 +95,35 @@ const Banner = () => {
     //     // value: ethers.utils.parseEther('0.1'),
 
     // })
+    const preSaleContract = {
+        address: paymentAddress,
+        abi: PaymentABI,
+    }
+
+    const { data, isError, isLoading } = useContractReads({
+        contracts: [
+            {
+                ...preSaleContract,
+                functionName: 'totalSupply',
+            },
+            {
+                ...preSaleContract,
+                functionName: 'soldToken',
+            },
+
+        ]
+    })
+
+    useEffect(() => {
+        const obj = Object.assign({}, data)
+
+        if (obj?.[0]?.status == "success") {
+            setSupply(obj?.[0]?.result.toString())
+        }
+        if (obj?.[1]?.status == "success") {
+            setTokenSold(obj?.[1]?.result)
+        }
+    }, [data])
 
     // const { sendTransaction } = useSendTransaction({
     //     request: {
@@ -84,6 +153,27 @@ const Banner = () => {
                     Buy and sell with the lowest fees in the industry
                     Buy and sell with the lowest fees in the industry
                 </p>
+
+                <GradientButton className=' rounded-[20px] p-[2rem] cursor-default items-center justify-between gap-4 my-16'>
+                    <FlexRow className={"justify-between w-full"}>
+                        <div className='font-inter text-2xl py-3 px-2 text-center text-white font-semibold my-3'>
+                            Token Sold:
+                        </div>
+
+                        <div className='font-inter text-2xl py-3 px-2 text-center text-white font-semibold my-3'>
+                            {tokenSold ? ethers.formatEther(tokenSold).split('.')[0] : 0}
+                        </div>
+                    </FlexRow>
+                    <FlexRow className={"justify-between w-full"}>
+                        <div className='font-inter text-2xl py-3 px-2 text-center text-white font-semibold my-3'>
+                            Total Supply:
+                        </div>
+                        <div className='font-inter text-2xl py-3 px-2 text-center text-white font-semibold my-3'>
+                            {tokenSold ? ethers.formatEther(supply).split('.')[0] : 0}
+
+                        </div>
+                    </FlexRow>
+                </GradientButton>
 
                 {/* <form
                     onSubmit={(e) => {
@@ -128,16 +218,36 @@ const Banner = () => {
                 </div> */}
             </FlexCol>
 
-            <FlexCol className={'w-full xl:w-[47%] relative justify-center items-center my-10 xl:my-0'}>
-                <FlexCol className={'w-full'}>
-                    <GradientButton
-                        className={"w-full h-[14.4rem] max-w-[660px] !rounded-[20px] mx-auto"}
-                    />
-                    <div className="border-2 border-[#5684fe]  w-full max-w-[660px] h-[19.75rem] mx-auto bg-[#5684fe]/10 backdrop-blur-xl mt-[10rem] !rounded-[20px]">
-                    </div>
-                </FlexCol>
 
-                <PaymentCard />
+            <FlexCol className={'w-full xl:w-[47%] justify-center items-center my-4 md:my-8 xl:my-0'}>
+                <Tabs value="swap" className="flex w-full flex-col mb-8">
+                    <TabsHeader className="flex w-full">
+                        {tabsData.map(({ label, value }) => (
+                            <Tab key={value} value={value} className='font-inter text-xl font-semibold'>
+                                {label}
+                            </Tab>
+                        ))}
+                    </TabsHeader>
+                    <TabsBody>
+                        {tabsData.map(({ desc, value }) => (
+                            <TabPanel key={value} value={value}>
+                                <FlexCol className={'w-full justify-center items-center  my-4 md:my-8  xl:my-0'}>
+                                    <FlexCol className={'w-full relative my-20'}>
+                                        <FlexCol className={'w-full'}>
+                                            <GradientButton
+                                                className={"w-full h-[14.4rem] max-w-[660px] !rounded-[20px] mx-auto"}
+                                            />
+                                            <div className="border-2 border-[#5684fe]  w-full max-w-[660px] h-[19.75rem] mx-auto bg-[#5684fe]/10 backdrop-blur-xl mt-[10rem] !rounded-[20px]">
+                                            </div>
+                                        </FlexCol>
+                                        {desc}
+
+                                    </FlexCol>
+                                </FlexCol>
+                            </TabPanel>
+                        ))}
+                    </TabsBody>
+                </Tabs >
             </FlexCol>
         </FlexCol>
     )

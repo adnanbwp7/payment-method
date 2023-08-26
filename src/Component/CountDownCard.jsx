@@ -1,30 +1,66 @@
 import { Card } from '@material-tailwind/react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { FlexCol, FlexRow } from './Elements'
 import Bar from '../Assets/Images/Bar.png'
-import { useContractRead } from 'wagmi'
+import { useAccount, useConnect, useContractRead, useContractReads } from 'wagmi'
 import PaymentABI from '../../ABI/payment.json'
-import moment from 'moment/moment'
-import timestamp from 'unix-timestamp';
+import moment, { invalid } from 'moment/moment'
+import { paymentAddress } from '../Assets/data/valure'
 
 
 const CountDownCard = () => {
     // const [data, setData] = useState()
     // const [error, setError] = useState()
+    const [preSaleDate, setPreSaleDate] = useState()
+    const [preSaleStatus, setPreSaleStatus] = useState()
+    const [userBounce, setUserBounce] = useState({
+        0: "",
+        1: "",
+        2: "",
+        3: "",
+        4: "",
+    })
+    const { address } = useAccount()
 
+    const preSaleContract = {
+        address: paymentAddress,
+        abi: PaymentABI,
+    }
 
-    // const { data, isError, error, isLoading } = useContractRead({
-    //     address: '0xB329bDad74861Ef1692d5a56E96c9C1Bb30F2776',
-    //     abi: PaymentABI,
-    //     functionName: 'preSaleStartTime',
-    // }, [])
-    const data = 1692991373;
-    
+    const { data, isError, isLoading } = useContractReads({
+        contracts: [
+            {
+                ...preSaleContract,
+                functionName: 'preSaleStartTime',
+            },
+            {
+                ...preSaleContract,
+                functionName: 'presaleStatus',
+            },
+            {
+                ...preSaleContract,
+                functionName: 'users',
+                args: [address]
+            },
+        ]
+    })
+
+    useEffect(() => {
+        const obj = Object.assign({}, data)
+
+        if (obj?.[0]?.status == "success") {
+            setPreSaleDate(obj?.[0]?.result.toString())
+        }
+        if (obj?.[1]?.status == "success") {
+            setPreSaleStatus(obj?.[1]?.result)
+        }
+    }, [data])
+
     const [preSaleTime, setPreSaleTime] = useState();
-    
+
     const calculatePreSaleTimeLeft = () => {
         const currentDate = new Date();
-        const timeLeftInSeconds = moment.unix(data).diff(currentDate, 'seconds');
+        const timeLeftInSeconds = moment.unix(preSaleDate).diff(currentDate, 'seconds');
         const duration = moment.duration(timeLeftInSeconds, 'seconds');
         setPreSaleTime(duration);
     };
@@ -41,48 +77,48 @@ const CountDownCard = () => {
 
     return (
         <>
-            <Card className="w-11/12 max-w-3xl flex my-32 mx-auto bg-white/80 mb-48" id='pre_sale_card'>
-                <h1 className='font-semibold font-inter text-4xl text-black mx-auto mt-8'>Per Sale Starts</h1>
-                {/* {isLoading ?
+            <Card className="w-11/12 max-w-3xl flex mt-32 mx-auto bg-white/80 mb-16" id='pre_sale_card'>
+                <h1 className='font-semibold font-inter text-4xl text-black mx-auto mt-8'>Pre-Sale Starts</h1>
+                {isLoading ?
                     <div className="w-fit text-center mx-auto my-5 font-semibold font-inter text-xl">
                         Loading...
                     </div> :
-                    isError ? */}
-                {/* <h1 className='font-normal font-inter text-xl text-red-500 mx-auto mb-12 mt-3'>No records found.</h1>
-                        : */}
-                <>
-                    <h1 className='font-normal font-inter text-xl text-black mx-auto mb-12'>
-                        {data && moment(Number(data.toString().split('n').join()) * 1000).format("DD MMMM")}
-                    </h1>
-                    <FlexRow className="justify-between gap-5 text-center w-8/12 mx-auto flex-wrap items-center">
-                        <FlexCol className={"mx-auto"}>
-                            <h1 className="text-5xl font-normal text-black bg-white px-5 py-1 mb-3 font-inter capitalize">
-                                {preSaleTime?.days() ? preSaleTime?.days() : 0}
+                    isError ?
+                        <h1 className='font-normal font-inter text-xl text-red-500 mx-auto mb-12 mt-3'>No records found.</h1>
+                        :
+                        <>
+                            <h1 className='font-normal font-inter text-xl text-black mx-auto mb-12'>
+                                {preSaleTime && moment(Number(preSaleDate?.toString().split('n').join()) * 1000).format("DD MMMM") != "Invalid date" ? moment(Number(preSaleDate?.toString().split('n').join()) * 1000).format("DD MMMM"): ""}
                             </h1>
-                            <h1 className="text-base font-normal text-black capitalize">days</h1>
-                        </FlexCol>
+                            <FlexRow className="justify-between gap-5 text-center w-8/12 mx-auto flex-wrap items-center">
+                                <FlexCol className={"mx-auto"}>
+                                    <h1 className="text-5xl font-normal text-black bg-white px-5 py-1 mb-3 font-inter capitalize">
+                                        {preSaleTime?.days() && preSaleTime?.days() > 0 ? preSaleTime?.days() : "00"}
+                                    </h1>
+                                    <h1 className="text-base font-normal text-black capitalize">days</h1>
+                                </FlexCol>
 
-                        <FlexCol className={"mx-auto"}>
-                            <h1 className="text-5xl font-normal text-black bg-white px-5 py-1 mb-3 font-inter">
-                                {preSaleTime?.hours() ? preSaleTime?.hours() : 0}
-                            </h1>
-                            <h1 className="text-base font-normal text-black capitalize">hours</h1>
-                        </FlexCol>
-                        <FlexCol className={"mx-auto"}>
-                            <h1 className="text-5xl font-normal text-black bg-white px-5 py-1 mb-3 font-inter">
-                                {preSaleTime?.minutes() ? preSaleTime?.minutes() : 0}
-                            </h1>
-                            <h1 className="text-base font-normal text-black capitalize">Minutes</h1>
-                        </FlexCol>
-                        <FlexCol className={"mx-auto"}>
-                            <h1 className="text-5xl font-normal text-black bg-white px-5 py-1 mb-3 font-inter">
-                                {preSaleTime?.seconds() ? preSaleTime?.seconds() : 0}
-                            </h1>
-                            <h1 className="text-base font-normal text-black capitalize">Secondss</h1>
-                        </FlexCol>
-                    </FlexRow>
-                </>
-                {/* } */}
+                                <FlexCol className={"mx-auto"}>
+                                    <h1 className="text-5xl font-normal text-black bg-white px-5 py-1 mb-3 font-inter">
+                                        {preSaleTime?.hours() && preSaleTime?.hours() > 0 ? preSaleTime?.hours() : "00"}
+                                    </h1>
+                                    <h1 className="text-base font-normal text-black capitalize">hours</h1>
+                                </FlexCol>
+                                <FlexCol className={"mx-auto"}>
+                                    <h1 className="text-5xl font-normal text-black bg-white px-5 py-1 mb-3 font-inter">
+                                        {preSaleTime?.minutes() && preSaleTime?.minutes() > 0 ? preSaleTime?.minutes() : "00"}
+                                    </h1>
+                                    <h1 className="text-base font-normal text-black capitalize">Minutes</h1>
+                                </FlexCol>
+                                <FlexCol className={"mx-auto"}>
+                                    <h1 className="text-5xl font-normal text-black bg-white px-5 py-1 mb-3 font-inter">
+                                        {preSaleTime?.seconds() && preSaleTime?.seconds() > 0 ? preSaleTime?.seconds() : "00"}
+                                    </h1>
+                                    <h1 className="text-base font-normal text-black capitalize">Seconds</h1>
+                                </FlexCol>
+                            </FlexRow>
+                        </>
+                }
                 <FlexRow className={'mx-auto mt-12 mb-16'}>
                     <img src={Bar} />
                 </FlexRow>

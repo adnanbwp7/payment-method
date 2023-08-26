@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FlexCol } from './Component/Elements'
 import Header from './Component/Header'
 import Banner from './Component/Banner'
@@ -14,10 +14,8 @@ import {
 } from '@rainbow-me/rainbowkit';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import {
-  mainnet,
-  baseGoerli,
   bsc,
-  bscTestnet,
+  bscTestnet
 } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
@@ -25,13 +23,11 @@ import { ToastContainer } from 'react-toastify'
 
 const App = () => {
   const { chains, publicClient } = configureChains(
-    [bsc, mainnet, baseGoerli, bscTestnet],
+    [bsc, bscTestnet],
     [
       alchemyProvider({ apiKey: "JomhmuQ76IsTZ8H5xQ0kuj2kvpHwF8X2" }),
       publicProvider()
-    ]
-    );
-    console.log("🚀 ~ file: App.jsx:28 ~ App ~ chains:", chains)
+    ]);
 
   const { connectors } = getDefaultWallets({
     appName: 'Payment',
@@ -45,6 +41,11 @@ const App = () => {
     publicClient
   })
 
+  useEffect(() => {
+    localStorage.clear()
+  }, [window.reload])
+  
+
   return (
     <>
       <WagmiConfig config={wagmiConfig}>
@@ -52,13 +53,10 @@ const App = () => {
           <ToastContainer
             position="top-right"
             autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
             closeOnClick
             rtl={false}
-            pauseOnFocusLoss
+            theme="dark"
             draggable
-            pauseOnHover
           />
           <FlexCol>
             {/* Header */}
@@ -72,6 +70,7 @@ const App = () => {
 
             {/* CountDown Card */}
             <CountDownCard />
+
 
             {/* Footer */}
             <Footer />

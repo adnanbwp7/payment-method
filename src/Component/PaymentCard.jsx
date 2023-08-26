@@ -5,19 +5,22 @@ import {
     Card,
     CardBody,
     Dialog,
-    Spinner
+    Spinner,
 } from "@material-tailwind/react";
 import CoinSvg from '../Assets/Images/Coin.png'
-import StyleImage from '../Assets/Images/StyleImage.svg'
+
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Ethereum, Binance } from '../Assets/data/currency';
-import { useAccount, useContractRead, useContractWrite, useNetwork } from 'wagmi';
-import { FlexCol, FlexRow, GradientButton, } from './Elements';
+import { useAccount, useContractRead, useContractWrite, useNetwork, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
+import { FlexCol, FlexRow, GradientButton, StyleImage, } from './Elements';
 import PaymentABI from '../../ABI/payment.json'
+import busdABI from '../../ABI/busdApproveABI.json'
+import usdABI from '../../ABI/usdApproveABI.json'
 import { ethers } from 'ethers';
 import { toast } from 'react-toastify';
+import { BusdApproveAddress, UsdApproveAddress, paymentAddress } from '../Assets/data/valure';
 
-const CurrencyDetail = ({ selectCoin, setSelectCoin, loading, setErrors, amount, setAmount, className, children, text }) => {
+const CurrencyDetail = ({ selectCoin, setSelectCoin, errors, loading, setErrors, amount, setAmount, className, children, text }) => {
     const { chain, chains } = useNetwork()
     const { isConnected, address } = useAccount()
 
@@ -66,7 +69,19 @@ const CurrencyDetail = ({ selectCoin, setSelectCoin, loading, setErrors, amount,
                                 className='font-semibold text-[1.38rem] font-inter text-white bg-transparent border-none outline-none w-full text-end mr-1'
                             />
                             {text == "Send" ?
-                                "$"
+                                selectCoin == "BnB" ?
+                                    <div className='w-8 h-8'>
+                                        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 2496 2496" style={{ enableBackground: 'new 0 0 2496 2496' }} space="preserve">
+                                            <g>
+                                                <path style={{ fillRule: 'evenodd', clipRule: 'evenodd', fill: '#F0B90B' }} d="M1248,0c689.3,0,1248,558.7,1248,1248s-558.7,1248-1248,1248 S0,1937.3,0,1248S558.7,0,1248,0L1248,0z" />
+                                                <path style={{ fill: '#FFFFFF' }} d="M685.9,1248l0.9,330l280.4,165v193.2l-444.5-260.7v-524L685.9,1248L685.9,1248z M685.9,918v192.3 l-163.3-96.6V821.4l163.3-96.6l164.1,96.6L685.9,918L685.9,918z M1084.3,821.4l163.3-96.6l164.1,96.6L1247.6,918L1084.3,821.4 L1084.3,821.4z" />
+                                                <path style={{ fill: '#FFFFFF' }} d="M803.9,1509.6v-193.2l163.3,96.6v192.3L803.9,1509.6L803.9,1509.6z M1084.3,1812.2l163.3,96.6 l164.1-96.6v192.3l-164.1,96.6l-163.3-96.6V1812.2L1084.3,1812.2z M1645.9,821.4l163.3-96.6l164.1,96.6v192.3l-164.1,96.6V918 L1645.9,821.4L1645.9,821.4L1645.9,821.4z M1809.2,1578l0.9-330l163.3-96.6v524l-444.5,260.7v-193.2L1809.2,1578L1809.2,1578 L1809.2,1578z" />
+                                                <polygon style={{ fill: '#FFFFFF' }} points="1692.1,1509.6 1528.8,1605.3 1528.8,1413 1692.1,1316.4 1692.1,1509.6" />
+                                                <path style={{ fill: '#FFFFFF' }} d="M1692.1,986.4l0.9,193.2l-281.2,165v330.8l-163.3,95.7l-163.3-95.7v-330.8l-281.2-165V986.4 L968,889.8l279.5,165.8l281.2-165.8l164.1,96.6H1692.1L1692.1,986.4z M803.9,656.5l443.7-261.6l444.5,261.6l-163.3,96.6 l-281.2-165.8L967.2,753.1L803.9,656.5L803.9,656.5z" />
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    : "$"
                                 :
                                 <div className="flex w-8 h-8 -ml-1">
                                     <img src={CoinSvg} />
@@ -86,7 +101,7 @@ const CurrencyDetail = ({ selectCoin, setSelectCoin, loading, setErrors, amount,
                                 else
                                     toast.error("Please Connect to wallet First in order to select")
                             }}
-                            className="font-inter border-2 border-white/30 rounded-xl text-white text-[1.38rem] gap-2 py-5 px-4 font-semibold flex items-center"
+                            className={`font-inter border-2 ${errors ? "border-red-500" : "border-white/30"} rounded-xl text-white text-[1.38rem] gap-2 py-5 px-2 font-semibold flex items-center`}
                         >
                             {data ?
                                 <>
@@ -146,7 +161,6 @@ const CurrencyDetail = ({ selectCoin, setSelectCoin, loading, setErrors, amount,
                                                 setSelectCoin(itm?.name)
                                                 setModalOpen(false)
                                             }}
-                                        // value={itm?.name}
                                         >
                                             <div className="w-1/2 h-1/2">
                                                 {itm?.icon}
@@ -169,7 +183,7 @@ const CurrencyDetail = ({ selectCoin, setSelectCoin, loading, setErrors, amount,
                             <div className="flex w-8 h-8">
                                 <img src={CoinSvg} />
                             </div>
-                            COIN
+                            BCONG
                         </div>
                     </button>
                 }
@@ -179,19 +193,57 @@ const CurrencyDetail = ({ selectCoin, setSelectCoin, loading, setErrors, amount,
     )
 }
 
-
-export const PaymentCard = () => {
+export const PaymentCard = ({ userBounce, setUserBounce }) => {
     const { isConnected, address } = useAccount()
     const [selectCoin, setSelectCoin] = useState("")
     const [amount, setAmount] = useState("")
+
+    const payment = paymentAddress
+    const UsdApprove = UsdApproveAddress
+    const BusdApprove = BusdApproveAddress
 
     const [swapedAmmount, setSwapedAmmount] = useState()
     const [loading, setLoading] = useState(false)
     const [errors, setErrors] = useState('')
     // if (selectCoin == "USDT") {
+    const [taransactionHash, setTaransactionHash] = useState()
+
+    const [succesfull, setSuccesfull] = useState()
+
+    const { refetch: fetchUserData } = useContractRead({
+        address: payment,
+        abi: PaymentABI,
+        functionName: 'users',
+        args: [address],
+        onSuccess(data) {
+            setUserBounce(Object.assign({}, data))
+        },
+        fail(err) {
+            // console.log("🚀 ~ file: PaymentCard.jsx:223 ~ fail ~ err:", err)
+        },
+    })
+
+
+    const { data, isLoading: paymentConfirmation, isSuccess, isError, error, write: confirm } = useContractWrite({
+        address: payment,
+        abi: PaymentABI,
+        functionName:
+            selectCoin == "USDT" ? 'buyTokenUSDT'
+                : selectCoin == "BUSD" ? 'buyTokenBUSD'
+                    : selectCoin == "BnB" ? 'buyTokenBnb'
+                        : '',
+        onSuccess(data) {
+            setSuccesfull(data?.hash)
+            waitForTransaction()
+            toast.success("Token Purchased Successfully")
+        },
+        onError(err) {
+            toast.error("Token Purchased Failed")
+        }
+    })
 
     const { isFetching, refetch: readContract } = useContractRead({
-        address: "0xB329bDad74861Ef1692d5a56E96c9C1Bb30F2776",
+        address: payment,
         abi: PaymentABI,
         functionName:
             selectCoin == "USDT" ? 'usdtToToken'
@@ -205,25 +257,112 @@ export const PaymentCard = () => {
             setLoading(false);
             setSwapedAmmount(ethers.formatEther(data))
         },
-        onError(error) {
-            console.log("Error", error);
+        onError() {
+            toast.error("There was an error while swaping. Please try again!")
+            // console.log("Error", error);
+        },
+    })
+    // const { config: configPayment } =
+    //     usePrepareContractWrite(
+    //         {
+    //             address: payment,
+    //             abi: PaymentABI,
+    //             functionName:
+    //                 selectCoin == "USDT" ? 'buyTokenUSDT'
+    //                     : selectCoin == "BUSD" ? 'buyTokenBUSD'
+    //                         : selectCoin == "BnB" ? 'buyTokenBnb'
+    //                             : ''
+    //         }
+    //     )
+    //     ;
+    // const { config: myConfig2 } = usePrepareContractWrite({ address: contractAddress2, abi: contractAbi2, functionName: 'func2' });
+
+    const { isLoading } = useWaitForTransaction({
+        hash: taransactionHash,
+        onSuccess(data) {
+            toast.success("Transaction approved Successfully!");
+            confirm({
+                args: [ethers.parseEther(amount)],
+                to: address,
+            })
+        },
+        onError(err) {
+            toast.error("Transaction Approval Failed!")
+        }
+    })
+
+    const { refetch: waitForTransaction } = useWaitForTransaction({
+        hash: succesfull,
+        onSuccess(data) {
+            fetchUserData()
         },
     })
 
-    const { data, isLoading, isSuccess, error, write } = useContractWrite({
-        address: '0xB329bDad74861Ef1692d5a56E96c9C1Bb30F2776',
-        abi: PaymentABI,
-        functionName: 'buyTokenBUSD',
+    const { data: usdData, isSuccess: usdSuccess, isLoading: waitingApproval, isError: isUsd, error: errorUsd, write: USD } = useContractWrite({
+        address: UsdApprove,
+        abi:
+            selectCoin == "USDT" ? usdABI
+                : selectCoin == "BUSD" ? busdABI
+                    : usdABI,
+        functionName: 'approve',
+        onSuccess(data) {
+            setTaransactionHash(data?.hash)
+        },
+        onError(err) {
+            toast.error("Token Approval failed")
+        }
+
     })
-    console.log("🚀Error", error)
+
+    const { data: BusdData, isSuccess: BusdSuccess, isError: isBusd, error: errorBusd, write: BUSD } = useContractWrite({
+        address: BusdApprove,
+        abi: busdABI,
+        functionName: 'approve',
+        onSuccess(data) {
+            setTaransactionHash(data?.hash)
+        },
+    })
 
 
-    const confirmPayment = () => {
-        write({
-            args: [ethers.parseEther(swapedAmmount)],
-            to: address,
-            value: ethers.parseEther(swapedAmmount),
-        })
+    // Hook contract functions
+    // const { data: paymentData, write: write } = useContractWrite(configPayment);
+    // const { data: data2, write: myFunction2 } = useContractWrite(myConfig2);
+
+
+    // useEffect(() => {
+    //     if (isError)
+    //         if (error.toString()?.split(":")[0] == "ContractFunctionExecutionError")
+    //             toast.error("Insufficient Funds")
+    //         else
+    //             toast.error("Error while Payment Confimation, Please Try Again")
+    // }, [isError])
+
+
+    const confirmPayment = (confirmation) => {
+        if (confirmation == "Click") {
+            if (selectCoin == "BnB") {
+                confirm({
+                    // args: [address, amount],
+                    to: address,
+                    value: ethers.parseEther(amount),
+                })
+            } else if (amount < 10) {
+                toast.error("Minmum Purchase Amount is 10", { toastId: 1 })
+            } else {
+                USD({
+                    args: [payment, amount * 1e18],
+                    to: address,
+                    // amount: amount,
+                })
+                // if (selectCoin == "USDT")
+                // else if (selectCoin == "BUSD")
+                //     BUSD({
+                //         args: [payment, amount * 1e18],
+                //         to: address,
+                //     })
+            }
+        }
+
     }
 
     useEffect(() => {
@@ -239,41 +378,53 @@ export const PaymentCard = () => {
     // // }
 
     return (
-        <Card className="w-11/12 max-w-xl absolute flex -top-6 left-1/2 transform -translate-x-1/2 ">
-            <CardBody>
-                <h1 className='font-inter text-[2.75rem] font-black text-center text-black mb-2' >
-                    Buy Coins
-                </h1>
+        <>
 
-                <CurrencyDetail
-                    selectCoin={selectCoin}
-                    setSelectCoin={setSelectCoin}
-                    text={"Send"}
-                    setErrors={setErrors}
-                    amount={amount}
-                    setAmount={setAmount}
-                />
-                <h6 className='text-red-500'>
-                    {errors}
-                </h6>
-                <div className="w-full m-7">
-                    <img src={StyleImage} />
-                </div>
-                <CurrencyDetail
-                    amount={swapedAmmount}
-                    loading={isFetching}
-                    className={''}
-                    text={"Recieved"}
-                />
-                <GradientButton
-                    onClick={confirmPayment}
-                    disabled={!swapedAmmount}
-                    className={'mt-10 py-10 text-center w-full text-[2rem]'}
-                    text={"Payment Confirm"}
-                />
-            </CardBody>
-        </Card>
+            {/* {tabsData.map(({ value, desc }) => ( */}
+            {/* <TabPanel key={value} value={value}> */}
+            {/* {value == "swap" ? */}
+            <Card className="w-11/12 max-w-xl absolute flex -top-6 left-1/2 transform -translate-x-1/2 ">
+                <CardBody>
+                    <h1 className='font-inter text-[2.75rem] font-black text-center text-black mb-2' >
+                        Buy BCONG
+                    </h1>
+
+                    <CurrencyDetail
+                        selectCoin={selectCoin}
+                        setSelectCoin={setSelectCoin}
+                        text={"Send"}
+                        setErrors={setErrors}
+                        amount={amount}
+                        errors={errors}
+                        setAmount={setAmount}
+                    />
+                    {errors ?
+                        <h6 className='text-red-500 my-4'>
+                            {errors}
+                        </h6>
+                        : ""
+                    }
+                    <div className="w-full my-7">
+                        <StyleImage />
+                    </div>
+                    <CurrencyDetail
+                        amount={swapedAmmount}
+                        loading={isFetching}
+                        className={''}
+                        text={"Recieved"}
+                    />
+                    <GradientButton
+                        onClick={() => confirmPayment("Click")}
+                        disabled={!swapedAmmount || waitingApproval || isLoading || paymentConfirmation}
+                        loading={waitingApproval || isLoading || paymentConfirmation}
+                        className={'mt-10 py-10 text-center w-full text-[2rem]'}
+                        text={"Payment Confirm"}
+                    />
+                </CardBody>
+            </Card>
+
+
+        </>
     );
 }
-
 

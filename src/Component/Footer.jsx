@@ -9,11 +9,26 @@ import { FlexRow } from './Elements'
 
 const Footer = () => {
     const social = [
-        FB,
-        X,
-        InstaFB,
-        LinkedIn,
-        Google
+        {
+            icon: FB,
+            link: ""
+        },
+        {
+            icon: X,
+            link: "https://twitter.com/BabyCongOfficia"
+        },
+        {
+            icon: InstaFB,
+            link: ""
+        },
+        {
+            icon: LinkedIn,
+            link: ""
+        },
+        {
+            icon: Google,
+            link: ""
+        },
     ]
     return (
         <>
@@ -23,12 +38,12 @@ const Footer = () => {
                     Buy and sell with the lowest fees in the industry Buy and sell with the lowest fees in the industry Buy and sell with the lowest
                 </h1>
                 <FlexRow className={"justify-between flex-wrap gap-7    "}>
-                    {social.map(icons => {
+                    {social.map(itm => {
                         return (
                             <>
-                                <button >
-                                    <img src={icons} />
-                                </button>
+                                <a href={itm?.link ? itm?.link : "#"} target='_blank'>
+                                    <img src={itm?.icon} />
+                                </a>
                             </>
                         )
                     })}
