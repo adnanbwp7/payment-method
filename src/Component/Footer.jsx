@@ -1,9 +1,7 @@
 import React from 'react'
 import FB from "../Assets/Images/FB.png"
-import LinkedIn from "../Assets/Images/LinkedIn.png"
-import InstaFB from "../Assets/Images/Insta.png"
+import telegram from "../Assets/Images/telegram.png"
 import X from "../Assets/Images/X.png"
-import Google from "../Assets/Images/Google.png"
 import { FlexRow } from './Elements'
 
 
@@ -11,23 +9,15 @@ const Footer = () => {
     const social = [
         {
             icon: FB,
-            link: ""
+            link: "https://www.facebook.com/babycongofficial?mibextid=ZbWKwL"
         },
         {
             icon: X,
             link: "https://twitter.com/BabyCongOfficia"
         },
         {
-            icon: InstaFB,
-            link: ""
-        },
-        {
-            icon: LinkedIn,
-            link: ""
-        },
-        {
-            icon: Google,
-            link: ""
+            icon: telegram,
+            link: "https://t.me/BabyCongoficial"
         },
     ]
     return (
@@ -37,11 +27,11 @@ const Footer = () => {
                 <h1 className='text-white/70 w-full md:w-7/12 max-w-3xl font-inter text-xl font-normal'>
                     Buy and sell with the lowest fees in the industry Buy and sell with the lowest fees in the industry Buy and sell with the lowest
                 </h1>
-                <FlexRow className={"justify-between flex-wrap gap-7    "}>
+                <FlexRow className={"justify-between flex-wrap gap-7  items-center  "}>
                     {social.map(itm => {
                         return (
                             <>
-                                <a href={itm?.link ? itm?.link : "#"} target='_blank'>
+                                <a href={itm?.link} target='_blank' className='w-[38px] h-[38px]'>
                                     <img src={itm?.icon} />
                                 </a>
                             </>

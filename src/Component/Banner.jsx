@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ConnectWalletBtn, FlexCol, FlexRow, GradientButton } from './Elements'
-import { useDebounce } from 'use-debounce'
+import {  FlexCol, FlexRow, GradientButton } from './Elements'
 import {
     Tabs,
     TabsHeader,
@@ -10,18 +9,11 @@ import {
 } from "@material-tailwind/react";
 import {
     useAccount,
-    useConnect,
-    useContractRead,
     useContractReads,
     useNetwork,
-    usePrepareSendTransaction,
-    useSendTransaction,
-    useWaitForTransaction,
 } from 'wagmi'
 
 import { ethers } from 'ethers';
-// import { parseEther } from 'viem'
-import PAYMENT from '../../ABI/payment.json'
 import { PaymentCard } from './PaymentCard';
 import SwapingCard from './SwapingCard';
 import { paymentAddress } from '../Assets/data/valure';
@@ -56,28 +48,6 @@ const Banner = () => {
             />
         },
     ]
-    // const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-
-    // // get end user's account
-
-    // const signer = provider.getSigner()
-
-    // const contract = new ethers.Contract(PAYMENT_CONTRACT_ADDRESS, signer);
-
-
-
-    // const { data, isError, error, isLoading } = useContractRead({
-    //     address: "0x4e37ADeEDc0480b3f3687Dc50FAa58504d17C643",
-    //     abi: PAYMENT,
-    //     functionName: 'EthToToken',
-    //     args: [(amount * 1e18).toString()]
-    // })
-
-    // console.log("🚀 ~ file: Banner.jsx:32 ~ Banner ~ data:", data,)
-    // console.log("🚀 ~ file: Banner.jsx:32 ~ Banner ~ isError:", isError, error)
-    // console.log("🚀 ~ file: Banner.jsx:32 ~ Banner ~ isLoading:", isLoading)
-
 
     const { activeConnector, isConnected, connector } = useAccount()
     const { chain, chains } = useNetwork()
@@ -85,16 +55,7 @@ const Banner = () => {
 
     const [tokenSold, setTokenSold] = useState(0)
     const [supply, setSupply] = useState(0)
-    // const [to, setTo] = React.useState('')
-    // const [amount, setAmount] = React.useState('')
 
-    // console.log("🚀 ~ file: Banner.jsx:18 ~ Banner ~ debouncedTo:", (Number(amount) * 1e18).toString())
-    // const { config } = usePrepareSendTransaction({
-    //     to: address,
-    //     value: (Number(amount) * 1e18).toString(),
-    //     // value: ethers.utils.parseEther('0.1'),
-
-    // })
     const preSaleContract = {
         address: paymentAddress,
         abi: PaymentABI,
@@ -125,22 +86,6 @@ const Banner = () => {
         }
     }, [data])
 
-    // const { sendTransaction } = useSendTransaction({
-    //     request: {
-    //         to: to,
-    //         value: (Number(amount) * 1e18).toString()
-    //     },
-    //     onSuccess: () => console.log("Send transaction"),
-    //     onError: (err) => console.log("Error sending transaction", err)
-
-    // })
-
-    // const { isLoading, isSuccess } = useWaitForTransaction({
-    //     hash: data?.hash,
-    // })
-
-    // console.log("🚀 ~ file: Banner.jsx:7 ~ Banner ~ isConnected:", useAccount())
-
     return (
         <FlexCol className={'w-11/12 max-w-[1480px] mx-auto flex-wrap gap-3 justify-between my-[7rem] xl:flex-row'}>
             <FlexCol className={'w-full xl:w-[47%]'}>
@@ -148,10 +93,7 @@ const Banner = () => {
                     Buy and sell with the lowest fees in the industry
                 </h1>
                 <p className='font-inter font-normal text-[1.25rem]  text-white/70 mt-[1rem]'>
-                    Buy and sell with the lowest fees in the industry
-                    Buy and sell with the lowest fees in the industry
-                    Buy and sell with the lowest fees in the industry
-                    Buy and sell with the lowest fees in the industry
+                    BCONG Presale bonus serves as an incentive for early participants, offering a reward structure based on their contribution amount.
                 </p>
 
                 <GradientButton className=' rounded-[20px] p-[2rem] cursor-default items-center justify-between gap-4 my-16'>
@@ -174,48 +116,6 @@ const Banner = () => {
                         </div>
                     </FlexRow>
                 </GradientButton>
-
-                {/* <form
-                    onSubmit={(e) => {
-                        e.preventDefault()
-                        sendTransaction()
-                    }}
-                > */}
-                {/* <input
-                    className='my-2 p-3'
-                    aria-label="Recipient"
-                    onChange={(e) => setTo(e.target.value)}
-                    placeholder="0xA0Cf…251e"
-                    value={to}
-                /> */}
-                {/* <input
-                    className='my-2 p-3'
-                    aria-label="Amount (ether)"
-                    onChange={(e) => setAmount(e.target.value)}
-                    placeholder="0.05"
-                    value={amount}
-                /> */}
-                {/* <button
-                    className='my-2 p-3 bg-blue-500 cursor-pointer'
-                    onClick={sendTransaction}
-                disabled={isLoading || !sendTransaction || !to || !amount}
-                >
-                    {isLoading ? 'Sending...' : 'Send'}
-                </button> 
-                 */}
-                {/* {isSuccess && (
-                    <div>
-                        Successfully sent {amount} ether to {to}
-                        <div>
-                            <a href={`https://etherscan.io/tx/${data?.hash}`}>Etherscan</a>
-                        </div>
-                    </div>
-                )} */}
-                {/* </form> */}
-
-                {/* <div className="mt-[4rem]">
-                    <ConnectWalletBtn className="text-[1.5rem] font-inter  w-fit px-[2.25rem] py-[1.5rem]" />
-                </div> */}
             </FlexCol>
 
 

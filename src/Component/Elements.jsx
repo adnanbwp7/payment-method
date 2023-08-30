@@ -97,7 +97,7 @@ export const ConnectWalletBtn = ({ className }) => {
                                     userSelect: 'none',
                                 },
                             })}
-                            className='w-full'
+                            // className='w-full'
                         >
                             {(() => {
                                 if (!connected) {
@@ -126,7 +126,7 @@ export const ConnectWalletBtn = ({ className }) => {
                                     );
                                 }
                                 return (
-                                    <div className='flex flex-wrap justify-between w-full mx-auto gap-3'>
+                                    <div className='flex flex-row justify-between w-full mx-auto gap-3'>
                                         <button
                                             onClick={openChainModal}
                                             className="rounded-xl mx-auto text-[1rem] h-12 w-40 font-semibold flex items-center justify-evenly bg-white"

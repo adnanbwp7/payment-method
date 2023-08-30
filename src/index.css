@@ -103,3 +103,10 @@ select {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
 }
+
+
+@media screen and (max-width: 768px) {
+  :root{
+    font-size: 13px;
+  }  
+} 

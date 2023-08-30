@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import {
-    Alert,
     Card,
     CardBody,
-    Dialog,
-    Spinner,
 } from "@material-tailwind/react";
 import { FlexCol, GradientButton, StyleImage } from './Elements';
-import { useAccount, useConnect, useContractRead, useContractReads, useContractWrite } from 'wagmi'
+import { useAccount, useContractReads, useContractWrite } from 'wagmi'
 import PaymentABI from '../../ABI/payment.json'
 import { paymentAddress } from '../Assets/data/valure';
 import { ethers } from 'ethers';

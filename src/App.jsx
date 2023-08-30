@@ -14,8 +14,7 @@ import {
 } from '@rainbow-me/rainbowkit';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import {
-  bsc,
-  bscTestnet
+  bsc
 } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
@@ -23,7 +22,7 @@ import { ToastContainer } from 'react-toastify'
 
 const App = () => {
   const { chains, publicClient } = configureChains(
-    [bsc, bscTestnet],
+    [bsc],
     [
       alchemyProvider({ apiKey: "JomhmuQ76IsTZ8H5xQ0kuj2kvpHwF8X2" }),
       publicProvider()
